@@ -121,14 +121,32 @@ th.forEach(function (x) { x.classList.toggle('is-active', x === t); });
 g.to(main, { autoAlpha: 0, y: 12, duration: 0.3, ease: 'power2.in', onComplete: function () { main.src = src.currentSrc || src.src; main.alt = src.alt; main.removeAttribute('srcset'); g.to(main, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out' }); } });
 }); });
 });
+var ibJump = function (t) {
+var sn = d.querySelector('[data-anim="subnav"]'), off = 24 + (sn ? sn.offsetHeight : 0);
+var top = t.getBoundingClientRect().top + w.scrollY - off;
+if (w.__ibLenis) w.__ibLenis.scrollTo(top, { duration: 1.2, lock: true, force: true });
+else w.scrollTo({ top: top, behavior: 'smooth' });
+};
+d.addEventListener('click', function (e) {
+var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+var h = a.getAttribute('href'); if (h.length < 2) return;
+var t = null; try { t = d.querySelector(h); } catch (er) { }
+if (!t) return;
+e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+if (history.replaceState) history.replaceState(null, '', h);
+ibJump(t);
+}, true);
 $('[data-anim="subnav"]').forEach(function (nav) {
 var links = $('a[href^="#"]', nav);
+var setActive = function (l) { links.forEach(function (x) { x.classList.toggle('is-active', x === l); }); };
 links.forEach(function (l) {
-var t = d.querySelector(l.getAttribute('href')); if (!t) return;
-l.addEventListener('click', function (e) { e.preventDefault(); if (w.__ibLenis) w.__ibLenis.scrollTo(t, { offset: -140 }); else w.scrollTo({ top: t.getBoundingClientRect().top + w.scrollY - 140, behavior: 'smooth' }); });
-ST.create({ trigger: t, start: 'top 45%', end: 'bottom 45%', onToggle: function (s) { if (s.isActive) links.forEach(function (x) { x.classList.toggle('is-active', x === l); }); } });
+var t = null; try { t = d.querySelector(l.getAttribute('href')); } catch (er) { }
+if (!t) return;
+l.addEventListener('click', function () { setActive(l); });
+ST.create({ trigger: t, start: 'top 40%', end: 'bottom 40%', onToggle: function (s) { if (s.isActive) setActive(l); } });
 });
 });
+if (location.hash.length > 1) { var ht = null; try { ht = d.querySelector(location.hash); } catch (er) { } if (ht) setTimeout(function () { ibJump(ht); }, 400); }
 $('[data-anim="tabs"]').forEach(function (tb) {
 var tabs = $('[data-tab]', tb.parentNode), field = tb.parentNode.querySelector('[data-tab-value]');
 tabs.forEach(function (t) { t.addEventListener('click', function (e) { e.preventDefault(); tabs.forEach(function (x) { x.classList.toggle('is-active', x === t); }); if (field) field.value = t.getAttribute('data-tab'); var vis = tb.parentNode.querySelector('select[name="istek"]'); if (vis) { var map = { 'İletişim': 'Ürün hakkında bilgi talebi', 'Teklif': 'Fiyat teklif talebi', 'Broşür': 'Broşür talebi', 'Teknik destek': 'Teknik yardım talebi' }; vis.value = map[t.getAttribute('data-tab')] || ''; } }); });
