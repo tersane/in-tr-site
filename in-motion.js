@@ -9,6 +9,7 @@ g.registerPlugin(ST); if (SP) g.registerPlugin(SP);
 var $ = function (s, r) { return Array.prototype.slice.call((r || d).querySelectorAll(s)); };
 var E = 'expo.out', num = function (el, a, def) { var v = parseFloat(el.getAttribute(a)); return isNaN(v) ? def : v; };
 if (w.Lenis && !w.__ibLenis) {
+de.style.overflowAnchor = 'none'; d.body.style.overflowAnchor = 'none';
 var lenis = w.__ibLenis = new w.Lenis({ lerp: 0.085 });
 lenis.on('scroll', ST.update); g.ticker.add(function (t) { lenis.raf(t * 1000); }); g.ticker.lagSmoothing(0);
 }
@@ -122,12 +123,16 @@ g.to(main, { autoAlpha: 0, y: 12, duration: 0.3, ease: 'power2.in', onComplete: 
 }); });
 });
 var ibJump = function (t) {
+var calc = function () {
 var sn = d.querySelector('[data-anim="subnav"]');
 var stuck = sn ? (parseFloat(getComputedStyle(sn).top) || 0) + sn.offsetHeight : 96;
 var ps = t.querySelector('.padding-section-large'), pad = ps ? parseFloat(getComputedStyle(ps).paddingTop) || 0 : 0;
-var top = t.getBoundingClientRect().top + w.scrollY + pad - stuck - 40;
-if (w.__ibLenis) w.__ibLenis.scrollTo(top, { duration: 1.2, lock: true, force: true });
-else w.scrollTo({ top: top, behavior: 'smooth' });
+return Math.max(0, Math.round(t.getBoundingClientRect().top + w.scrollY + pad - stuck - 40));
+};
+$('img[loading="lazy"]').forEach(function (im) { im.loading = 'eager'; });
+var L = w.__ibLenis;
+if (L) L.scrollTo(calc(), { duration: 1.2, onComplete: function () { var t2 = calc(); if (Math.abs(t2 - L.scroll) > 3) L.scrollTo(t2, { duration: 0.6 }); } });
+else w.scrollTo({ top: calc(), behavior: 'smooth' });
 };
 d.addEventListener('click', function (e) {
 var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
