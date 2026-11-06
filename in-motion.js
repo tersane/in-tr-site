@@ -122,8 +122,10 @@ g.to(main, { autoAlpha: 0, y: 12, duration: 0.3, ease: 'power2.in', onComplete: 
 }); });
 });
 var ibJump = function (t) {
-var sn = d.querySelector('[data-anim="subnav"]'), off = 24 + (sn ? sn.offsetHeight : 0);
-var top = t.getBoundingClientRect().top + w.scrollY - off;
+var sn = d.querySelector('[data-anim="subnav"]');
+var stuck = sn ? (parseFloat(getComputedStyle(sn).top) || 0) + sn.offsetHeight : 96;
+var ps = t.querySelector('.padding-section-large'), pad = ps ? parseFloat(getComputedStyle(ps).paddingTop) || 0 : 0;
+var top = t.getBoundingClientRect().top + w.scrollY + pad - stuck - 40;
 if (w.__ibLenis) w.__ibLenis.scrollTo(top, { duration: 1.2, lock: true, force: true });
 else w.scrollTo({ top: top, behavior: 'smooth' });
 };
